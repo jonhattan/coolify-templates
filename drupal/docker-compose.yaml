@@ -8,10 +8,10 @@ services:
     environment:
       APP_DOMAIN: $SERVICE_URL_DRUPAL
       DB_HOST: mariadb
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_USER: ${MYSQL_USER}
-      DB_PASS: ${SERVICE_MARIADB_PASSWORD}
-      HASH_SALT: ${SERVICE_BASE64_64_DRUPAL}
+      DB_NAME: ${DB_NAME:-db}
+      DB_USER: ${DB_USER:-db}
+      DB_PASS: $SERVICE_MARIADB_PASSWORD
+      HASH_SALT: $SERVICE_BASE64_64_DRUPAL
       REDIS_ENABLED: true
       REDIS_HOST: redis
     volumes:
@@ -29,10 +29,10 @@ services:
     restart: unless-stopped
     stop_grace_period: 30s
     environment:
-      MYSQL_ROOT_PASSWORD: ${SERVICE_MARIADB_PASSWORD}
-      MYSQL_DATABASE: drupal
-      MYSQL_USER: drupal
-      MYSQL_PASSWORD: ${SERVICE_MARIADB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: $SERVICE_MARIADB_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $SERVICE_MARIADB_PASSWORD
     volumes:
       - ./etc/mysql/conf.d:/etc/mysql/conf.d
       - mariadb-data:/var/lib/mysql
