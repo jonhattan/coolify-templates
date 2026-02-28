@@ -2,11 +2,12 @@
 
 services:
   drupal:
-    image: $DRUPAL_IMAGE
+    image: $DRUPAL_IMAGE:$DRUPAL_IMAGE_TAG
     pull_policy: always
     restart: unless-stopped
     environment:
       DRUPAL_IMAGE: ${DRUPAL_IMAGE:?}
+      DRUPAL_IMAGE_TAG: ${DRUPAL_IMAGE_TAG:?}
       APP_DOMAIN: $SERVICE_FQDN_DRUPAL
       DB_HOST: mariadb
       DB_NAME: ${DB_NAME:-db}
@@ -26,21 +27,25 @@ services:
       - db
       - redis
   mariadb:
-    image: ${DB_IMAGE:?}
+    image: $DB_IMAGE:$DB_IMAGE_TAG
     restart: unless-stopped
     stop_grace_period: 30s
     environment:
-      - DB_IMAGE
-      - MYSQL_ROOT_PASSWORD=$SERVICE_PASSWORD_DBROOT
-      - MYSQL_DATABASE=$DB_NAME
-      - MYSQL_USER=$DB_USER
-      - MYSQL_PASSWORD=$SERVICE_PASSWORD_DB
+      DB_IMAGE: ${DB_IMAGE:-mariadb}
+      DB_IMAGE_TAG: ${DB_IMGE_TAG:-11.4}
+      MYSQL_ROOT_PASSWORD: $SERVICE_PASSWORD_DBROOT
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $SERVICE_PASSWORD_DB
     volumes:
       - ./etc/mysql/conf.d:/etc/mysql/conf.d
       - mariadb-data:/var/lib/mysql
   redis:
-    image: ${REDIS_IMAGE:-redis}
+    image: $REDIS_IMAGE:$REDIS_IMAGE_TAG
     restart: unless-stopped
+    environment:
+      REDIS_IMAGE: ${REDIS_IMAGE:-redis}
+      REDIS_IMAGE_TAG: ${REDIS_IMAGE_TAG:-7}
 
 volumes:
   mariadb-data:
