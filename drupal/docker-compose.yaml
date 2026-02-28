@@ -2,7 +2,7 @@
 
 services:
   drupal:
-    image: $DRUPAL_IMAGE:$DRUPAL_IMAGE_TAG
+    image: $DRUPAL_IMAGE
     pull_policy: always
     restart: unless-stopped
     environment:
@@ -10,7 +10,7 @@ services:
       DB_HOST: mariadb
       DB_NAME: ${DB_NAME:-db}
       DB_USER: ${DB_USER:-db}
-      DB_PASS: $SERVICE_MARIADB_PASSWORD
+      DB_PASS: $SERVICE_PASSWORD_DB
       HASH_SALT: $SERVICE_BASE64_64_DRUPAL
       REDIS_ENABLED: true
       REDIS_HOST: redis
@@ -29,10 +29,10 @@ services:
     restart: unless-stopped
     stop_grace_period: 30s
     environment:
-      MYSQL_ROOT_PASSWORD: $SERVICE_MARIADB_PASSWORD
+      MYSQL_ROOT_PASSWORD: $SERVICE_PASSWORD_DB-ROOT
       MYSQL_DATABASE: $DB_NAME
       MYSQL_USER: $DB_USER
-      MYSQL_PASSWORD: $SERVICE_MARIADB_PASSWORD
+      MYSQL_PASSWORD: $SERVICE_PASSWORD_DB
     volumes:
       - ./etc/mysql/conf.d:/etc/mysql/conf.d
       - mariadb-data:/var/lib/mysql
