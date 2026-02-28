@@ -15,7 +15,7 @@ services:
     restart: unless-stopped
     environment:
       APP_DOMAIN: $SERVICE_URL_DRUPAL
-      DB_HOST: db
+      DB_HOST: mariadb
       DB_NAME: $MYSQL_DATABASE
       DB_USER: $MYSQL_USER
       DB_PASS: $SERVICE_MARIADB_PASSWORD
@@ -25,6 +25,10 @@ services:
     volumes:
       - drupal-files:/var/www/html/web/sites/default/files
       - drupal-private:/var/www/html/private-files
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "scripts/healthcheck"
     depends_on:
       - db
       - redis
