@@ -24,7 +24,7 @@ services:
         - CMD-SHELL
         - "scripts/healthcheck"
     depends_on:
-      - db
+      - mariadb
       - redis
   mariadb:
     image: $DB_IMAGE:$DB_IMAGE_TAG
@@ -32,7 +32,7 @@ services:
     stop_grace_period: 30s
     environment:
       DB_IMAGE: ${DB_IMAGE:-mariadb}
-      DB_IMAGE_TAG: ${DB_IMGE_TAG:-11.4}
+      DB_IMAGE_TAG: ${DB_IMAGE_TAG:-11.4}
       MYSQL_ROOT_PASSWORD: $SERVICE_PASSWORD_DBROOT
       MYSQL_DATABASE: $DB_NAME
       MYSQL_USER: $DB_USER
