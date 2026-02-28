@@ -6,6 +6,7 @@ services:
     pull_policy: always
     restart: unless-stopped
     environment:
+      DRUPAL_IMAGE: ${DRUPAL_IMAGE:?}
       APP_DOMAIN: $SERVICE_FQDN_DRUPAL
       DB_HOST: mariadb
       DB_NAME: ${DB_NAME:-db}
