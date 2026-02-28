@@ -1,0 +1,69 @@
+---
+
+x-vars-required:
+  # Ensure COMPOSE_PROJECT_NAME pre-defined environment variable is set.
+  Compose project name: ${COMPOSE_PROJECT_NAME:?err}
+  # Drupal service.
+  DRUPAL_IMAGE: ${DRUPAL_IMAGE:?err}
+  DRUPAL_IMAGE_TAG: ${DRUPAL_IMAGE_TAG:?err}
+  # Drupal services.
+  ## Database connection settings are required so that db image can create the database.
+  DB_NAME: ${DB_NAME:?err}
+  DB_USER: ${DB_USER:?err}
+  DB_PASS: ${DB_PASS:?err}
+  ## Fail soon if no hash salt is set.
+  HASH_SALT: ${HASH_SALT:?err}
+  # Db service.
+  DB_IMAGE: ${DB_IMAGE:?err}
+  DB_IMAGE_TAG: ${DB_IMAGE_TAG:?err}
+  DB_ADMIN_PASS: ${DB_ADMIN_PASS:?err}
+  # Redis service.
+  REDIS_IMAGE: ${REDIS_IMAGE:?err}
+  REDIS_IMAGE_TAG: ${REDIS_IMAGE_TAG:?err}
+
+services:
+  drupal:
+    image: $DRUPAL_IMAGE:$DRUPAL_IMAGE_TAG
+    pull_policy: always
+    restart: unless-stopped
+    # Allow any env to be passed without having to declare it explicitly.
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_NAME: $DB_NAME
+      DB_USER: $DB_USER
+      DB_PASS: $DB_PASS
+      HASH_SALT: $HASH_SALT
+      REDIS_ENABLED: true
+      REDIS_HOST: redis
+    volumes:
+      - drupal-files:/var/www/html/web/sites/default/files
+      - drupal-private:/var/www/html/private-files
+      - drupal-tmp:/var/www/html/tmp
+      - drupal-translations:/var/www/html/translations
+    depends_on:
+      - db
+      - redis
+  db:
+    image: $DB_IMAGE:$DB_IMAGE_TAG
+    restart: unless-stopped
+    stop_grace_period: 30s
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_ADMIN_PASS
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $DB_PASS
+    volumes:
+      - ../bbdd:/docker-entrypoint-initdb.d
+      - ./services/db/etc/mysql/conf.d:/etc/mysql/conf.d
+      - db-data:/var/lib/mysql
+  redis:
+    image: $REDIS_IMAGE:$REDIS_IMAGE_TAG
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  drupal-files:
+  drupal-private:
+  drupal-tmp:
+  drupal-translations:
