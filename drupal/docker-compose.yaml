@@ -30,6 +30,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 30s
     environment:
+      DB_IMAGE:
       MYSQL_ROOT_PASSWORD: $SERVICE_PASSWORD_DBROOT
       MYSQL_DATABASE: $DB_NAME
       MYSQL_USER: $DB_USER
@@ -38,7 +39,7 @@ services:
       - ./etc/mysql/conf.d:/etc/mysql/conf.d
       - mariadb-data:/var/lib/mysql
   redis:
-    image: ${REDIS_IMAGE-redis}
+    image: ${REDIS_IMAGE:-redis}
     restart: unless-stopped
 
 volumes:
